@@ -63,26 +63,20 @@ async def update_cash_balance(
     user_id: uuid.UUID,
     amount: Decimal,
     entry_type: str,
+    entry_date: date,
 ) -> Decimal:
     """
     Adjust the user's cash balance based on an inflow or outflow.
-
-    Args:
-        db:         Async DB session
-        user_id:    UUID of the user
-        amount:     Transaction amount
-        entry_type: "inflow" or "outflow"
-
-    Returns:
-        The updated cash balance
+    Only updates balance if the transaction date is in the past or today.
     """
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one()
 
-    if entry_type == "inflow":
-        user.cash_balance = user.cash_balance + amount
-    else:
-        user.cash_balance = user.cash_balance - amount
+    if entry_date <= date.today():
+        if entry_type == "inflow":
+            user.cash_balance = user.cash_balance + amount
+        else:
+            user.cash_balance = user.cash_balance - amount
 
     return user.cash_balance
 
@@ -126,7 +120,7 @@ async def save_and_update(
 
     # Step 3: Update balance
     new_balance = await update_cash_balance(
-        db, user_id, entry.amount, entry.type
+        db, user_id, entry.amount, entry.type, entry.date
     )
 
     # Step 4: Count total entries

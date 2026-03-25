@@ -64,7 +64,7 @@ def parse_amount(text: str) -> Optional[float]:
     return None
 
 
-def parse_date_from_text(text: str) -> date:
+def parse_date_from_text(text: str, amount: Optional[float] = None) -> date:
     """
     Extract date from text. Supports:
     - Relative words: today, tomorrow, yesterday
@@ -99,10 +99,22 @@ def parse_date_from_text(text: str) -> date:
     # Try dateutil parser for explicit date strings
     # Remove common words that confuse the parser
     cleaned = re.sub(
-        r"\b(?:pay|receive|got|buy|bought|from|for|to|rent|salary|client)\b",
+        r"\b(?:pay|receive|got|buy|bought|from|for|to|rent|salary|client|rs\.?|inr|rupees?|\u20b9)\b",
         "",
         lower,
     )
+    # Explicitly remove the extracted amount to prevent it from confusing the date parser
+    if amount is not None:
+        amt_float = float(amount)
+        # remove float version
+        cleaned = cleaned.replace(str(amt_float), "")
+        # remove integer version
+        if amt_float.is_integer():
+            cleaned = cleaned.replace(str(int(amt_float)), "")
+            
+    # Remove any remaining standalone large numbers (5+ digits, or exactly 10-12 digits for phone numbers) 
+    # that could confuse dateutil
+    cleaned = re.sub(r"\b\d{5,}\b", "", cleaned)
     try:
         parsed = dateutil_parser.parse(cleaned, fuzzy=True, dayfirst=True)
         return parsed.date()
@@ -174,7 +186,7 @@ def parse_text_input(message: str) -> Dict:
         }
     """
     amount = parse_amount(message)
-    entry_date = parse_date_from_text(message)
+    entry_date = parse_date_from_text(message, amount)
     entry_type = determine_type(message)
     risk = determine_risk(message)
     flexibility = determine_flexibility(message)
