@@ -181,70 +181,112 @@ def _looks_like_monetary(value: float, context: str = "") -> bool:
     return True
 
 
+def _fix_rupee_misread(text: str) -> str:
+    """
+    Correct Tesseract OCR's common misreading of the ₹ symbol as the digit '7'.
+
+    The ₹ glyph is rendered as '7' by older/unconfigured Tesseract builds, so:
+        ₹3150.00  →  OCR produces  73150.00
+        ₹104.29   →  OCR produces  7104.29
+
+    Strategy: detect '7' NOT preceded by another digit, followed immediately by
+    2–4 digits then a decimal point.  Requiring a decimal makes the rule safe —
+    it avoids turning a real integer like 7500 into 500.
+    """
+    # 7 + 2-4 digits + decimal  (covers 7104.29, 73150.00, 7XX.XX)
+    text = re.sub(r'(?<!\d)7(\d{2,4}\.\d{1,2})\b', r'₹\1', text)
+    # After price-context keywords, also catch bare integers like 73150
+    text = re.sub(
+        r'(?i)(total|amount|price|payable|due)\b([^\n]{0,20}?\s)7(\d{3,}(?:\.\d{1,2})?)\b',
+        lambda m: m.group(1) + m.group(2) + '₹' + m.group(3),
+        text,
+    )
+    return text
+
+
 def extract_receipt_amount(ocr_text: str) -> Optional[float]:
     """
     Extract total amount from OCR receipt text.
-    
-    Strategy:
-    1. Look for explicit 'Total' / 'Subtotal' / 'Grand Total' labels.
-    2. Fall back to finding amounts with decimal points (e.g., 13.73).
-    3. Fall back to the generic parser as last resort.
+
+    Strategy (in order):
+    1. Amount on the same line as 'total' / 'grand total' / 'amount' keyword.
+    2. The LAST rupee/Rs-prefixed amount in the text
+       (receipt totals are usually printed last with the currency symbol).
+    3. The number that appears on the same line or immediately after a
+       total-like label — even without a currency prefix.
+    4. Median of all valid monetary amounts as a safe fallback
+       (avoids phone numbers and large codes that inflate max()).
     """
     if not ocr_text:
         return None
 
-    # 1. Look for labeled totals (e.g., "Total: 13.73", "Total 13 73", "Total $13.73")
-    total_patterns = [
-        r"(?:grand\s*)?total\s*[:\-]?\s*\$?\s*(\d+[\.,]\d{2})",
-        r"(?:grand\s*)?total\s*[:\-]?\s*\$?\s*(\d+)\s+(\d{2})\b",  # "Total 13 73"
-        r"(?:grand\s*)?total\s*[:\-]?\s*(?:₹|rs\.?|inr)?\s*([\d,]+(?:\.\d{1,2})?)",
-        r"(?:sub\s*)?total\s*[:\-]?\s*\$?\s*(\d+[\.,]\d{2})",
-    ]
-    for pattern in total_patterns:
-        match = re.search(pattern, ocr_text, re.IGNORECASE)
-        if match:
-            groups = match.groups()
-            try:
-                if len(groups) == 2 and groups[1] is not None:
-                    val = float(f"{groups[0]}.{groups[1]}")
-                else:
-                    val = float(groups[0].replace(",", "."))
-                if val > 0:
-                    return val
-            except (ValueError, IndexError):
-                continue
+    lines = ocr_text.splitlines()
 
-    # 2. Find ALL numbers that look like monetary amounts in the text
-    all_amounts = []
-    amount_patterns = [
-        r"\$\s*(\d+[\.,]\d{2})",                        # $13.73
-        r"(?:₹|rs\.?|inr)\s*([\d,]+(?:\.\d{1,2})?)",   # Rs.1500, ₹200
-        r"(\d+\.\d{2})\b",                               # 13.73 (decimal amounts)
-        r"(\d+),(\d{2})\b",                               # 13,73 (European)
+    # ── 1. Look for explicit total labels on the same line ────────────────────
+    total_line_patterns = [
+        r"(?:grand\s*total|net\s*amount|total\s*amount|amount\s*due|total\s*payable|total)\s*[:\-=]?\s*(?:₹|rs\.?|inr)?\s*([\d,]+(?:\.\d{1,2})?)",
+        r"(?:grand\s*total|net\s*amount|total\s*amount|amount\s*due|total\s*payable|total)\s*[:\-=]?\s*([\d,]+(?:\.\d{1,2})?)\s*$",
     ]
-    for pattern in amount_patterns:
-        for match in re.finditer(pattern, ocr_text, re.IGNORECASE):
+    for line in reversed(lines):  # search from bottom of receipt upward
+        for pattern in total_line_patterns:
+            match = re.search(pattern, line, re.IGNORECASE)
+            if match:
+                try:
+                    val = float(match.group(1).replace(",", ""))
+                    if _looks_like_monetary(val):
+                        return val
+                except ValueError:
+                    continue
+
+    # ── 2. Last rupee / Rs-prefixed amount (most likely the total) ───────────
+    rupee_pattern = r"(?:₹|rs\.?|inr)\s*([\d,]+(?:\.\d{1,2})?)"
+    rupee_matches = list(re.finditer(rupee_pattern, ocr_text, re.IGNORECASE))
+    if rupee_matches:
+        for m in reversed(rupee_matches):
             try:
-                groups = match.groups()
-                if len(groups) == 2 and groups[1] is not None:
-                    val = float(f"{groups[0]}.{groups[1]}")
-                else:
-                    val = float(groups[0].replace(",", ""))
+                val = float(m.group(1).replace(",", ""))
                 if _looks_like_monetary(val):
-                    all_amounts.append(val)
+                    return val
             except ValueError:
                 continue
 
-    if all_amounts:
-        # Return the largest amount (most likely the total on a receipt)
-        return max(all_amounts)
+    # ── 3. Collect ALL valid monetary-looking numbers ─────────────────────────
+    all_amounts: list[float] = []
+    decimal_amounts: list[float] = []  # prefer numbers with decimal points
+    amount_patterns = [
+        r"\b(\d{1,6}\.\d{2})\b",           # 3150.00 or 13.73 (with decimals)
+        r"\b(\d{1,3}(?:,\d{3})+)\b",        # 3,150 (comma thousands)
+        r"\b(\d{3,6})\b",                   # bare integers 100–999999
+    ]
+    for i, pattern in enumerate(amount_patterns):
+        for match in re.finditer(pattern, ocr_text):
+            try:
+                val = float(match.group(1).replace(",", ""))
+                if _looks_like_monetary(val):
+                    all_amounts.append(val)
+                    if i == 0:  # decimal amounts are more trustworthy
+                        decimal_amounts.append(val)
+            except ValueError:
+                continue
 
-    # 3. Fall back to the generic parser (but filter results)
+    # Prefer decimal amounts; if multiple exist, take the largest of those
+    # (avoids picking up line-item quantities while still avoiding phone numbers)
+    if decimal_amounts:
+        return max(decimal_amounts)
+
+    if all_amounts:
+        # Use median to resist outlier phone numbers / pump IDs
+        sorted_amounts = sorted(all_amounts)
+        mid = len(sorted_amounts) // 2
+        return sorted_amounts[mid]
+
+    # ── 4. Last resort: generic parser ───────────────────────────────────────
     generic = parse_amount(ocr_text)
     if generic and _looks_like_monetary(generic):
         return generic
 
     return None
+
 
 
 def parse_receipt(image_bytes) -> Dict:
@@ -266,6 +308,9 @@ def parse_receipt(image_bytes) -> Dict:
     """
     # Step 1: OCR extraction
     raw_text = extract_text_from_image(image_bytes)
+
+    # Step 1b: Fix ₹ misread as '7' before any further parsing
+    raw_text = _fix_rupee_misread(raw_text)
 
     # Step 2: Parse structured fields from OCR text
     amount = extract_receipt_amount(raw_text)
