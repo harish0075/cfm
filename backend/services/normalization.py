@@ -55,6 +55,8 @@ def normalize_entry(
         confidence_score=Decimal(str(parsed_data.get("confidence_score", 0.9))),
         risk_level=parsed_data.get("risk_level", "low"),
         flexibility=parsed_data.get("flexibility", 5),
+        is_recurring=parsed_data.get("is_recurring", 0),
+        recurrence_interval=parsed_data.get("recurrence_interval", None),
     )
 
 

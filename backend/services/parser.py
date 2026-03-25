@@ -169,6 +169,20 @@ def extract_description(text: str) -> str:
     return cleaned if cleaned else text
 
 
+def determine_recurrence(text: str):
+    """Detect if a transaction is recurring and its interval."""
+    lower = text.lower()
+    if any(kw in lower for kw in ["every month", "monthly", "per month", "each month"]):
+        return 1, "monthly"
+    if any(kw in lower for kw in ["every week", "weekly", "per week", "each week"]):
+        return 1, "weekly"
+    if any(kw in lower for kw in ["every year", "yearly", "annually", "per year"]):
+        return 1, "yearly"
+    if any(kw in lower for kw in ["every day", "daily", "per day", "each day"]):
+        return 1, "daily"
+    return 0, None
+
+
 def parse_text_input(message: str) -> Dict:
     """
     Main parser entry point.
@@ -183,6 +197,8 @@ def parse_text_input(message: str) -> Dict:
             "confidence_score": float,
             "risk_level": str,
             "flexibility": int,
+            "is_recurring": int,
+            "recurrence_interval": Optional[str]
         }
     """
     amount = parse_amount(message)
@@ -191,6 +207,7 @@ def parse_text_input(message: str) -> Dict:
     risk = determine_risk(message)
     flexibility = determine_flexibility(message)
     description = extract_description(message)
+    is_recurring, recurrence_interval = determine_recurrence(message)
 
     # Confidence is high for text (user directly typed it)
     # but reduced if we couldn't extract an amount
@@ -204,4 +221,6 @@ def parse_text_input(message: str) -> Dict:
         "confidence_score": confidence,
         "risk_level": risk,
         "flexibility": flexibility,
+        "is_recurring": is_recurring,
+        "recurrence_interval": recurrence_interval,
     }

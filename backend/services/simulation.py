@@ -34,26 +34,56 @@ def simulate_cashflow(
     # Build event timeline
     events: Dict[date, List[Dict[str, Any]]] = {}
 
+    def _generate_dates(start, end, is_recurring, interval):
+        if not is_recurring or not interval:
+            return [start]
+        dates = []
+        curr = start
+        while curr <= end:
+            dates.append(curr)
+            if interval == "monthly":
+                # Rough approximation: add 30 days or advance month
+                curr = curr + timedelta(days=30)
+            elif interval == "weekly":
+                curr = curr + timedelta(days=7)
+            elif interval == "yearly":
+                curr = curr.replace(year=curr.year + 1)
+            elif interval == "daily":
+                curr = curr + timedelta(days=1)
+            else:
+                break
+        return dates
+
     for outflow in outflows:
         d = _parse_date(outflow.get("date", outflow.get("due_date")))
-        if d and today <= d <= end_date:
-            events.setdefault(d, []).append({
-                "type": "outflow",
-                "amount": float(outflow["amount"]),
-                "description": outflow.get("description", "Payment"),
-            })
+        is_rec = outflow.get("is_recurring", 0)
+        interval = outflow.get("recurrence_interval")
+        
+        if d:
+            for event_date in _generate_dates(d, end_date, is_rec, interval):
+                if today <= event_date <= end_date:
+                    events.setdefault(event_date, []).append({
+                        "type": "outflow",
+                        "amount": float(outflow["amount"]),
+                        "description": outflow.get("description", "Payment"),
+                    })
 
     if inflows:
         for inflow in inflows:
             d = _parse_date(inflow.get("date", inflow.get("expected_date")))
             confidence = float(inflow.get("confidence", 1.0))
-            if d and today <= d <= end_date:
-                events.setdefault(d, []).append({
-                    "type": "inflow",
-                    "amount": float(inflow["amount"]) * confidence,  # weight by confidence
-                    "description": inflow.get("description", "Expected inflow"),
-                    "confidence": confidence,
-                })
+            is_rec = inflow.get("is_recurring", 0)
+            interval = inflow.get("recurrence_interval")
+            
+            if d:
+                for event_date in _generate_dates(d, end_date, is_rec, interval):
+                    if today <= event_date <= end_date:
+                        events.setdefault(event_date, []).append({
+                            "type": "inflow",
+                            "amount": float(inflow["amount"]) * confidence,  # weight by confidence
+                            "description": inflow.get("description", "Expected inflow"),
+                            "confidence": confidence,
+                        })
 
     # Simulate day-by-day
     timeline = []

@@ -27,6 +27,8 @@ class ObligationInput(BaseModel):
         ..., ge=0, le=10, description="Importance of relationship (0–10)"
     )
     description: str = Field("", description="Human-readable description")
+    is_recurring: int = Field(0, description="0=False, 1=True")
+    recurrence_interval: Optional[str] = Field(None, description="'monthly', 'weekly', etc.")
 
 
 class InflowInput(BaseModel):

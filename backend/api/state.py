@@ -65,6 +65,8 @@ async def get_user_state(
             confidence_score=e.confidence_score,
             risk_level=e.risk_level,
             flexibility=e.flexibility,
+            is_recurring=getattr(e, "is_recurring", 0),
+            recurrence_interval=getattr(e, "recurrence_interval", None),
         )
 
     all_entry_responses = [_to_entry_resp(e) for e in entries]

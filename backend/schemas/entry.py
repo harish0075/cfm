@@ -42,6 +42,8 @@ class EntryResponse(BaseModel):
     confidence_score: Decimal
     risk_level: str
     flexibility: int
+    is_recurring: int
+    recurrence_interval: Optional[str]
 
     model_config = {"from_attributes": True}
 

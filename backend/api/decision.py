@@ -59,6 +59,8 @@ def _entries_to_outflows(entries) -> list:
             "amount": float(e.amount),
             "date": e.date.isoformat(),
             "description": e.description or "",
+            "is_recurring": getattr(e, "is_recurring", 0),
+            "recurrence_interval": getattr(e, "recurrence_interval", None),
         }
         for e in entries
         if e.type == "outflow" and e.date >= today
@@ -74,6 +76,8 @@ def _entries_to_inflows(entries) -> list:
             "date": e.date.isoformat(),
             "description": e.description or "",
             "confidence": float(e.confidence_score),
+            "is_recurring": getattr(e, "is_recurring", 0),
+            "recurrence_interval": getattr(e, "recurrence_interval", None),
         }
         for e in entries
         if e.type == "inflow" and e.date >= today
@@ -271,12 +275,24 @@ async def simulate(
     db_inflows = _entries_to_inflows(user.entries)
 
     req_outflows = [
-        {"amount": float(o.amount), "date": o.due_date.isoformat(), "description": o.description}
+        {
+            "amount": float(o.amount), 
+            "date": o.due_date.isoformat(), 
+            "description": o.description,
+            "is_recurring": getattr(o, "is_recurring", 0),
+            "recurrence_interval": getattr(o, "recurrence_interval", None)
+        }
         for o in request.outflows
     ]
     req_inflows = [
-        {"amount": float(i.amount), "date": i.expected_date.isoformat(),
-         "confidence": i.confidence, "description": i.description}
+        {
+            "amount": float(i.amount), 
+            "date": i.expected_date.isoformat(),
+            "confidence": i.confidence, 
+            "description": i.description,
+            "is_recurring": getattr(i, "is_recurring", 0),
+            "recurrence_interval": getattr(i, "recurrence_interval", None)
+        }
         for i in request.inflows
     ]
 

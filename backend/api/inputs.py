@@ -72,6 +72,8 @@ def _build_entry_response(entry) -> EntryResponse:
         confidence_score=entry.confidence_score,
         risk_level=entry.risk_level,
         flexibility=entry.flexibility,
+        is_recurring=getattr(entry, "is_recurring", 0),
+        recurrence_interval=getattr(entry, "recurrence_interval", None),
     )
 
 

@@ -58,6 +58,10 @@ class FinancialEntry(Base):
     # Flexibility score indicating how adjustable this entry is (1–10)
     flexibility = Column(Integer, nullable=False, default=5)
 
+    # Recurring transaction support
+    is_recurring = Column(Integer, default=0, nullable=False)  # 0=False, 1=True (using Integer for DB compatibility without new ENUMs)
+    recurrence_interval = Column(String(50), nullable=True)     # 'monthly', 'weekly', etc.
+
     created_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
