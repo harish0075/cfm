@@ -85,6 +85,13 @@ class ObligationDecision(BaseModel):
     confidence: float
     reasoning: str
     probabilities: ProbabilityBreakdown
+    action_suggestion: str
+
+
+class DecisionPlan(BaseModel):
+    """Shows the categorized plan of what to pay vs delay."""
+    pay: List[ObligationDecision]
+    delay: List[ObligationDecision]
 
 
 class RunwayInfo(BaseModel):
@@ -99,24 +106,25 @@ class RunwayInfo(BaseModel):
     minimum_balance_date: str
 
 
-class DecisionResponse(BaseModel):
-    """Full response from POST /decide."""
-
-    decisions: List[ObligationDecision]
-    runway: RunwayInfo
-    total_obligations: Decimal
-    current_cash: Decimal
-    cash_deficit: Decimal
-    pay_count: int
-    delay_count: int
-    summary: str
-
-
 class TimelineDay(BaseModel):
     """A single day in the cash flow timeline."""
     date: str
     balance: float
     events: List[Dict[str, Any]] = Field(default_factory=list)
+
+class DecisionResponse(BaseModel):
+    """Full response from POST /decide."""
+
+    balance: Decimal
+    runway_days: Optional[int]
+    risk_level: str
+    timeline: List[TimelineDay]
+    plan: DecisionPlan
+    explanations: List[str]
+    actions: List[str]
+    alerts: List[str]
+    summary: str
+
 
 
 class SimulateResponse(BaseModel):

@@ -24,6 +24,7 @@ from api.auth import router as auth_router
 from api.inputs import router as inputs_router
 from api.state import router as state_router
 from api.decision import router as decision_router
+from api.payment import router as payment_router
 
 
 # ── Lifespan — DB table creation on startup ───────────────────────────────────
@@ -53,8 +54,8 @@ app = FastAPI(
 # ── CORS middleware ───────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict in production
-    allow_credentials=True,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -65,6 +66,7 @@ app.include_router(auth_router, tags=["Authentication"])
 app.include_router(inputs_router, tags=["Inputs"])
 app.include_router(state_router, tags=["State"])
 app.include_router(decision_router, tags=["Decision Engine"])
+app.include_router(payment_router, tags=["Payment Gateway Mock"])
 
 
 # ── Health check ──────────────────────────────────────────────────────────────

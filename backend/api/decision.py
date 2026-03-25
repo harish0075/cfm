@@ -20,6 +20,7 @@ from models.user import User
 from models.financial_entry import FinancialEntry
 from api.deps import get_current_user
 from schemas.decision import (
+    DecisionPlan,
     DecisionRequest,
     DecisionResponse,
     ObligationDecision,
@@ -155,12 +156,49 @@ async def decide(
         inflows=inflow_dicts or None,
     )
 
-    # Build response
+    # Run simulation for timeline
+    timeline = simulate_cashflow(
+        current_cash, all_outflows, all_inflows or None, horizon_days=30
+    )
+
+    # Build response format
     total_obligations = sum(float(o.amount) for o in request.obligations)
     cash_deficit = max(0, total_obligations - current_cash)
 
-    pay_count = sum(1 for d in decisions if d["action"] == "pay")
-    delay_count = sum(1 for d in decisions if d["action"] == "delay")
+    pay_decisions = []
+    delay_decisions = []
+    explanations = []
+    actions = []
+
+    for d in decisions:
+        obs = ObligationDecision(
+            description=d["description"],
+            amount=Decimal(str(d["amount"])),
+            days_to_due=d["days_to_due"],
+            action=d["action"],
+            confidence=d["confidence"],
+            reasoning=d["reasoning"],
+            probabilities=ProbabilityBreakdown(**d["probabilities"]),
+            action_suggestion=d.get("action_suggestion", ""),
+        )
+        if d["action"] == "pay":
+            pay_decisions.append(obs)
+        else:
+            delay_decisions.append(obs)
+        
+        explanations.append(f"{d['description']}: {d['reasoning']}")
+        if d.get("action_suggestion"):
+            actions.append(d["action_suggestion"])
+
+    pay_count = len(pay_decisions)
+    delay_count = len(delay_decisions)
+
+    # Alerts
+    alerts = []
+    if runway_days <= 30:
+        alerts.append(f"CRITICAL: Cash will run out in {runway_days} days!")
+    elif cash_deficit > 0:
+        alerts.append(f"WARNING: Cash deficit of ₹{cash_deficit:,.0f} detected.")
 
     # Generate summary
     if cash_deficit > 0:
@@ -177,24 +215,14 @@ async def decide(
         )
 
     return DecisionResponse(
-        decisions=[
-            ObligationDecision(
-                description=d["description"],
-                amount=Decimal(str(d["amount"])),
-                days_to_due=d["days_to_due"],
-                action=d["action"],
-                confidence=d["confidence"],
-                reasoning=d["reasoning"],
-                probabilities=ProbabilityBreakdown(**d["probabilities"]),
-            )
-            for d in decisions
-        ],
-        runway=RunwayInfo(**runway_result),
-        total_obligations=Decimal(str(total_obligations)),
-        current_cash=Decimal(str(current_cash)),
-        cash_deficit=Decimal(str(cash_deficit)),
-        pay_count=pay_count,
-        delay_count=delay_count,
+        balance=Decimal(str(current_cash)),
+        runway_days=runway_result["runway_days"],
+        risk_level=runway_result["risk_level"],
+        timeline=[TimelineDay(**day) for day in timeline],
+        plan=DecisionPlan(pay=pay_decisions, delay=delay_decisions),
+        explanations=explanations,
+        actions=actions,
+        alerts=alerts,
         summary=summary,
     )
 

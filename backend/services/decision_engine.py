@@ -172,13 +172,38 @@ def evaluate_obligations(
             "description": obligation.get("description", ""),
             "amount": amount,
             "days_to_due": obligation.get("days_to_due", 30),
+            "penalty_score": obligation.get("penalty_score", 5),
+            "relationship_score": obligation.get("relationship_score", 5),
             "action": result["action"],
             "confidence": result["confidence"],
             "reasoning": reasoning,
             "probabilities": result["probabilities"],
         })
 
-    # Sort: pay items first, then by urgency (days_to_due ascending)
+    # === Conflict Resolution ===
+    # If total "pay" exceeds cash, demote lowest-priority items to "delay"
+    pay_items = [d for d in decisions if d["action"] == "pay"]
+    
+    if pay_items:
+        # Sort by urgency/importance: High Penalty -> High Relationship -> Urgent Date
+        pay_items.sort(key=lambda x: (-x["penalty_score"], -x["relationship_score"], x["days_to_due"]))
+        
+        running_total = 0.0
+        for item in pay_items:
+            if running_total + item["amount"] > current_cash:
+                item["action"] = "delay"
+                item["reasoning"] = item["reasoning"] + " (Demoted to delay: insufficient cash reserves to cover this priority level)."
+            else:
+                running_total += item["amount"]
+
+    # === Action Generation ===
+    for d in decisions:
+        if d["action"] == "pay":
+            d["action_suggestion"] = f"Execute payment of ₹{d['amount']:,.0f} for {d['description']}"
+        else:
+            d["action_suggestion"] = f"Draft extension negotiation email for {d['description']} (Due in {d['days_to_due']} days)"
+
+    # Final Sort: pay items first, then by urgency (days_to_due ascending)
     decisions.sort(key=lambda d: (0 if d["action"] == "pay" else 1, d["days_to_due"]))
 
     return decisions

@@ -51,26 +51,37 @@ async def get_user_state(
     # Build entry list sorted by date (newest first)
     entries = sorted(user.entries, key=lambda e: e.date, reverse=True)
 
+    from datetime import date as date_type
+    today = date_type.today()
+
+    def _to_entry_resp(e):
+        return EntryResponse(
+            id=e.id,
+            type=e.type,
+            amount=e.amount,
+            date=e.date,
+            source=e.source,
+            description=e.description,
+            confidence_score=e.confidence_score,
+            risk_level=e.risk_level,
+            flexibility=e.flexibility,
+        )
+
+    all_entry_responses = [_to_entry_resp(e) for e in entries]
+    inflow_entries = [_to_entry_resp(e) for e in entries if e.type == "inflow"]
+    outflow_entries = [_to_entry_resp(e) for e in entries if e.type == "outflow" and e.date <= today]
+    future_payment_entries = [_to_entry_resp(e) for e in entries if e.type == "outflow" and e.date > today]
+
     return UserStateResponse(
         user_id=user.id,
         name=user.name,
         phone=user.phone,
         cash_balance=user.cash_balance,
         total_entries=len(entries),
-        entries=[
-            EntryResponse(
-                id=e.id,
-                type=e.type,
-                amount=e.amount,
-                date=e.date,
-                source=e.source,
-                description=e.description,
-                confidence_score=e.confidence_score,
-                risk_level=e.risk_level,
-                flexibility=e.flexibility,
-            )
-            for e in entries
-        ],
+        entries=all_entry_responses,
+        inflows=inflow_entries,
+        outflows=outflow_entries,
+        future_payments=future_payment_entries,
         assets=[
             AssetResponse(
                 id=a.id,

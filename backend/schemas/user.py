@@ -89,6 +89,9 @@ class TokenResponse(BaseModel):
     user_id: UUID
 
 
+from schemas.entry import EntryResponse
+
+
 class UserStateResponse(BaseModel):
     """Schema for GET /state/{user_id} — full financial state of a user."""
 
@@ -97,7 +100,10 @@ class UserStateResponse(BaseModel):
     phone: str
     cash_balance: Decimal
     total_entries: int
-    entries: list  # Will contain EntryResponse dicts
+    entries: List[EntryResponse]  # all entries (backward compat)
+    inflows: List[EntryResponse]  # past/recorded inflows
+    outflows: List[EntryResponse]  # past/recorded outflows
+    future_payments: List[EntryResponse]  # future outflows (payables)
     assets: List[AssetResponse]
 
     model_config = {"from_attributes": True}
