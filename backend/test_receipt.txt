@@ -1,0 +1,5 @@
+This is a mock text receipt.
+Store: Mega Mart
+Date: 25/03/2026
+Total: Rs. 450.00
+Thank you!
