@@ -24,6 +24,9 @@ class User(Base):
     # Phone is the unique identifier for the user
     phone = Column(String(20), unique=True, nullable=False, index=True)
 
+    # Bcrypt-hashed password
+    password_hash = Column(String(128), nullable=False)
+
     # Current cash balance — updated as inflows/outflows are recorded
     cash_balance = Column(Numeric(precision=15, scale=2), nullable=False, default=0)
 

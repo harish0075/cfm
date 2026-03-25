@@ -20,8 +20,10 @@ from models import User, Asset, FinancialEntry  # noqa: F401
 
 # Import API routers
 from api.onboard import router as onboard_router
+from api.auth import router as auth_router
 from api.inputs import router as inputs_router
 from api.state import router as state_router
+from api.decision import router as decision_router
 
 
 # ── Lifespan — DB table creation on startup ───────────────────────────────────
@@ -59,8 +61,10 @@ app.add_middleware(
 
 # ── Register routers ─────────────────────────────────────────────────────────
 app.include_router(onboard_router, tags=["Onboarding"])
+app.include_router(auth_router, tags=["Authentication"])
 app.include_router(inputs_router, tags=["Inputs"])
 app.include_router(state_router, tags=["State"])
+app.include_router(decision_router, tags=["Decision Engine"])
 
 
 # ── Health check ──────────────────────────────────────────────────────────────

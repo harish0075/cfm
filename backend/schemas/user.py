@@ -48,6 +48,9 @@ class OnboardRequest(BaseModel):
     phone: str = Field(
         ..., min_length=10, max_length=15, description="Unique phone number"
     )
+    password: str = Field(
+        ..., min_length=6, description="Account password (min 6 characters)"
+    )
     cash_balance: Decimal = Field(
         ..., ge=0, description="Initial cash balance"
     )
@@ -67,6 +70,23 @@ class OnboardResponse(BaseModel):
     message: str = "User onboarded successfully"
 
     model_config = {"from_attributes": True}
+
+
+# ── Authentication Schemas ────────────────────────────────────────────────────
+
+class LoginRequest(BaseModel):
+    """Schema for POST /login."""
+
+    phone: str = Field(..., min_length=10, max_length=15, description="Registered phone number")
+    password: str = Field(..., min_length=1, description="Account password")
+
+
+class TokenResponse(BaseModel):
+    """Schema for POST /login response — JWT access token."""
+
+    access_token: str
+    token_type: str = "bearer"
+    user_id: UUID
 
 
 class UserStateResponse(BaseModel):

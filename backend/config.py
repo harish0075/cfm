@@ -11,6 +11,10 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/cfm_v1"
 
+    # JWT configuration
+    SECRET_KEY: str = "cfm-v1-super-secret-change-in-production"
+    JWT_ALGORITHM: str = "HS256"
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

@@ -11,3 +11,8 @@ pdfplumber==0.11.4
 python-dateutil==2.9.0
 alembic==1.13.3
 python-dotenv==1.0.1
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+scikit-learn==1.5.2
+joblib==1.4.2
+numpy==1.26.4

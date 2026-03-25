@@ -16,6 +16,7 @@ from database import get_db
 from models.asset import Asset
 from models.financial_entry import FinancialEntry
 from models.user import User
+from api.deps import get_current_user
 from schemas.entry import EntryResponse
 from schemas.user import AssetResponse, UserStateResponse
 
@@ -23,7 +24,11 @@ router = APIRouter()
 
 
 @router.get("/state/{user_id}", response_model=UserStateResponse)
-async def get_user_state(user_id: UUID, db: AsyncSession = Depends(get_db)):
+async def get_user_state(
+    user_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     """
     Retrieve the complete financial state for a user.
 
@@ -80,7 +85,11 @@ async def get_user_state(user_id: UUID, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/reset/{user_id}")
-async def reset_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
+async def reset_user(
+    user_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     """
     Reset a user's financial data.
 

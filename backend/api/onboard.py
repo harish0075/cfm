@@ -1,7 +1,7 @@
 """
 User onboarding endpoint.
 
-POST /onboard — creates a new user with initial cash balance and assets.
+POST /onboard — creates a new user with initial cash balance, password, and assets.
 """
 
 from sqlalchemy import select
@@ -12,6 +12,7 @@ from database import get_db
 from models.user import User
 from models.asset import Asset
 from schemas.user import OnboardRequest, OnboardResponse, AssetResponse
+from services.auth import hash_password
 
 router = APIRouter()
 
@@ -21,7 +22,7 @@ async def onboard_user(request: OnboardRequest, db: AsyncSession = Depends(get_d
     """
     Onboard a new user with their initial financial profile.
 
-    - Creates the user record with name, phone, and starting cash balance
+    - Creates the user record with name, phone, password, and starting cash balance
     - Stores all declared assets (house, vehicles, gold, others)
     - Assets are stored as last-resort liquidity fallbacks (not actively used yet)
 
@@ -39,6 +40,7 @@ async def onboard_user(request: OnboardRequest, db: AsyncSession = Depends(get_d
     user = User(
         name=request.name,
         phone=request.phone,
+        password_hash=hash_password(request.password),
         cash_balance=request.cash_balance,
     )
     db.add(user)
@@ -58,7 +60,7 @@ async def onboard_user(request: OnboardRequest, db: AsyncSession = Depends(get_d
         asset_models.append(asset)
 
     await db.flush()  # Ensure assets get IDs
-
+    await db.commit()
     # ── Build response ────────────────────────────────────────────────────────
     return OnboardResponse(
         user_id=user.id,

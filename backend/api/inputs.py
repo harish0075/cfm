@@ -20,6 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models.user import User
+from api.deps import get_current_user
 from schemas.entry import (
     BankStatementResponse,
     EntryResponse,
@@ -77,7 +78,11 @@ def _build_entry_response(entry) -> EntryResponse:
 # ── A. TEXT INPUT ─────────────────────────────────────────────────────────────
 
 @router.post("/input", response_model=InputResponse)
-async def text_input(request: TextInputRequest, db: AsyncSession = Depends(get_db)):
+async def text_input(
+    request: TextInputRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     """
     Process a natural language financial message.
 
@@ -108,7 +113,11 @@ async def text_input(request: TextInputRequest, db: AsyncSession = Depends(get_d
 # ── B. SMS WEBHOOK ────────────────────────────────────────────────────────────
 
 @router.post("/sms-webhook", response_model=InputResponse)
-async def sms_webhook(request: SMSWebhookRequest, db: AsyncSession = Depends(get_db)):
+async def sms_webhook(
+    request: SMSWebhookRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     """
     Simulated SMS webhook.
 
@@ -138,6 +147,7 @@ async def upload_receipt(
     user_id: UUID = Form(...),
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     """
     Upload a receipt image for OCR processing.
@@ -177,6 +187,7 @@ async def upload_bank_statement(
     user_id: UUID = Form(...),
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     """
     Upload a PDF bank statement.
@@ -220,6 +231,7 @@ async def audio_input(
     user_id: UUID = Form(...),
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     """
     Upload an audio file for transcription and processing.
