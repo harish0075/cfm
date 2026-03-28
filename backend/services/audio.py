@@ -13,6 +13,18 @@ import tempfile
 import os
 from typing import Dict
 
+# Ensure whisper can find ffmpeg binary when installed by winget.
+# Adjust this path if your installation location differs.
+FFMPEG_PATH = r"C:\Users\acers\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1-full_build\bin"
+if os.path.isdir(FFMPEG_PATH):
+    os.environ["PATH"] = FFMPEG_PATH + os.pathsep + os.environ.get("PATH", "")
+
+try:
+    import whisper
+    WHISPER_AVAILABLE = True
+except ImportError:
+    WHISPER_AVAILABLE = False
+
 from services.parser import parse_text_input
 
 
@@ -33,19 +45,36 @@ def mock_transcribe(audio_bytes: bytes, filename: str = "audio.wav") -> str:
         return "Bought groceries for 3000 today"
     else:
         # Generic mock transcript
-        return "Paid 5000 for miscellaneous expenses today"
+        return "paid 12500 for office supplies today"
 
 
 def transcribe_audio(audio_bytes: bytes, filename: str = "audio.wav") -> str:
     """
     Transcribe audio bytes to text.
-    Uses mock transcription — swap implementation for real Whisper.
+    Uses OpenAI Whisper if available, otherwise mock transcription.
     """
-    # Future: save to temp file, run Whisper, delete temp file
-    # whisper_model = whisper.load_model("base")
-    # result = whisper_model.transcribe(temp_path)
-    # return result["text"]
-    return mock_transcribe(audio_bytes, filename)
+    if WHISPER_AVAILABLE:
+        # Use real Whisper
+        with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as temp_file:
+            temp_file.write(audio_bytes)
+            temp_path = temp_file.name
+
+        try:
+            model = whisper.load_model("base")
+            result = model.transcribe(temp_path)
+            transcript = result["text"].strip()
+            print(f"Whisper transcript: '{transcript}'")
+            if not transcript:
+                raise RuntimeError("Whisper returned empty transcription")
+            return transcript
+        except Exception as e:
+            print(f"Whisper failed: {e}")
+            raise
+        finally:
+            os.unlink(temp_path)
+    else:
+        # Fallback to mock, only when whisper is unavailable.
+        return mock_transcribe(audio_bytes, filename)
 
 
 def parse_audio_input(audio_bytes: bytes, filename: str = "audio.wav") -> Dict:

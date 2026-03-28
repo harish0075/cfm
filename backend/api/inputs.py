@@ -31,7 +31,7 @@ from schemas.entry import (
 from services.audio import parse_audio_input
 from services.bank_parser import parse_bank_statement
 from services.normalization import save_and_update
-from services.ocr import parse_receipt
+from services.ocr import parse_receipt_from_text, extract_text_from_image
 from services.parser import parse_text_input
 
 router = APIRouter()
@@ -100,7 +100,9 @@ async def text_input(
     await _get_user(db, request.user_id)
 
     # Parse natural language
+    print(f"DEBUG: Received text message: '{request.message}'")
     parsed = parse_text_input(request.message)
+    print(f"DEBUG: Parsed result: {parsed}")
 
     # Normalize, persist, and update balance
     result = await save_and_update(db, request.user_id, parsed, source="text")
@@ -152,22 +154,32 @@ async def upload_receipt(
     current_user: User = Depends(get_current_user),
 ):
     """
-    Upload a receipt image for OCR processing.
+    Upload a receipt image or PDF for OCR processing.
 
-    Accepts common image formats (JPEG, PNG).
-    Uses pytesseract to extract text, then parses amount, date, and vendor.
+    Accepts common image formats (JPEG, PNG) and PDFs (including scanned documents).
+    Uses advanced PaddleOCR for superior handwritten text recognition.
     Confidence score reflects extraction quality.
     """
     # Verify user exists
     await _get_user(db, user_id)
 
-    # Read image bytes
-    image_bytes = await file.read()
-    if not image_bytes:
+    # Read file bytes
+    file_bytes = await file.read()
+    if not file_bytes:
         raise HTTPException(status_code=400, detail="Empty file uploaded")
 
-    # OCR parse
-    parsed = parse_receipt(image_bytes)
+    # Check file type and process accordingly
+    filename = file.filename.lower() if file.filename else ""
+    if filename.endswith('.pdf'):
+        # PDF processing
+        from services.ocr import extract_text_from_pdf
+        raw_text = extract_text_from_pdf(file_bytes)
+    else:
+        # Image processing
+        raw_text = extract_text_from_image(file_bytes)
+
+    # Parse the extracted text
+    parsed = parse_receipt_from_text(raw_text)
 
     # Remove raw_text before normalization (not stored in DB)
     parsed.pop("raw_text", None)
@@ -248,12 +260,19 @@ async def audio_input(
     audio_bytes = await file.read()
     if not audio_bytes:
         raise HTTPException(status_code=400, detail="Empty file uploaded")
+    print(f"DEBUG: Received audio file, size: {len(audio_bytes)} bytes")
 
     # Transcribe and parse
-    parsed = parse_audio_input(audio_bytes, filename=file.filename or "audio.wav")
+    try:
+        transcription = parse_audio_input(audio_bytes, filename=file.filename or "audio.wav")
+    except Exception as e:
+        print(f"DEBUG: Audio transcription error: {e}")
+        raise HTTPException(status_code=400, detail=f"Audio transcription failed: {e}")
 
-    # Remove transcript key before normalization (not a DB field)
+    print(f"DEBUG: Audio transcription: '{transcription['transcript']}'")
+    parsed = transcription
     parsed.pop("transcript", None)
+    print(f"DEBUG: Parsed audio result: {parsed}")
 
     # Normalize, persist, and update balance
     result = await save_and_update(db, user_id, parsed, source="audio")

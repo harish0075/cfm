@@ -8,6 +8,9 @@ Run with:
     uvicorn main:app --reload
 """
 
+import os
+os.environ["PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK"] = "True"
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -16,7 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import Base, engine
 
 # Import all models so they are registered with Base.metadata
-from models import User, Asset, FinancialEntry  # noqa: F401
+from models import User, Asset, FinancialEntry, MailConnection  # noqa: F401
 
 # Import API routers
 from api.onboard import router as onboard_router
@@ -25,6 +28,7 @@ from api.inputs import router as inputs_router
 from api.state import router as state_router
 from api.decision import router as decision_router
 from api.payment import router as payment_router
+from api.mail import router as mail_router
 
 
 # ── Lifespan — DB table creation on startup ───────────────────────────────────
@@ -67,6 +71,7 @@ app.include_router(inputs_router, tags=["Inputs"])
 app.include_router(state_router, tags=["State"])
 app.include_router(decision_router, tags=["Decision Engine"])
 app.include_router(payment_router, tags=["Payment Gateway Mock"])
+app.include_router(mail_router, tags=["Mail — Microsoft 365 OAuth"])
 
 
 # ── Health check ──────────────────────────────────────────────────────────────

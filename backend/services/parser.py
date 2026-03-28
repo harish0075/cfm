@@ -44,24 +44,96 @@ HIGH_FLEXIBILITY_KEYWORDS = ["gift", "shopping", "entertainment", "dining", "tra
 def parse_amount(text: str) -> Optional[float]:
     """
     Extract monetary amount from text.
-    Supports formats: 20000, 20,000, ₹20000, Rs.20000, Rs 20,000
+    Supports currency-prefixed and plain numbers, with comma separators.
+    Picks the highest likely monetary value when multiple possibilities are found.
     """
-    # Match currency-prefixed or plain numbers
-    patterns = [
-        r"(?:₹|rs\.?|inr)\s*([\d,]+(?:\.\d{1,2})?)",  # ₹20000, Rs.20000
-        r"([\d,]+(?:\.\d{1,2})?)\s*(?:₹|rs\.?|inr|rupees?)",
-        r"Rs\.?\s?(\d+(?:\.\d{1,2})?)",  # 20000 Rs
-        r"\b([\d,]+(?:\.\d{1,2})?)\b",  # plain number: 20000
+    # First, find all explicit currency amounts, prioritized.
+    currency_patterns = [
+        r"(?:₹|rs\.?|inr)\s*([\d,]+(?:\.\d{1,2})?)(?:\s*/-)?",
+        r"([\d,]+(?:\.\d{1,2})?)\s*(?:₹|rs\.?|inr|rupees?)(?:\s*/-)?",
     ]
-    for pattern in patterns:
-        match = re.search(pattern, text, re.IGNORECASE)
-        if match:
+    amounts = []
+
+    for pattern in currency_patterns:
+        for match in re.finditer(pattern, text, re.IGNORECASE):
             amount_str = match.group(1).replace(",", "")
             try:
-                return float(amount_str)
+                val = float(amount_str)
+                amounts.append(val)
             except ValueError:
                 continue
+
+    # If we found amounts with currency context, take the max one (likely total)
+    if amounts:
+        return max(amounts)
+
+    # Fallback: scan plain numbers but avoid dates, phone-like chunks
+    plain_pattern = r"(\d{1,6}(?:,\d{3})*(?:\.\d{1,2})?)"
+    for match in re.finditer(plain_pattern, text):
+        amount_str = match.group(1).replace(",", "")
+        try:
+            val = float(amount_str)
+            # Exclude 4-digit years and very common non-money values (for now)
+            if 1900 <= val <= 2100:
+                continue
+            amounts.append(val)
+        except ValueError:
+            continue
+
+    if amounts:
+        # if there are mixed values, pick the largest of plausible amounts
+        plausible = [a for a in amounts if a > 0]
+        if plausible:
+            return max(plausible)
+
+    # Fallback: parse text number words
+    word_amount = _text_to_number(text)
+    if word_amount and word_amount > 0:
+        return word_amount
+
     return None
+
+
+def _text_to_number(text: str) -> Optional[float]:
+    """Convert words to number if possible, e.g., 'twelve thousand' -> 12000."""
+    units = {
+        'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+        'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+        'eleven': 11, 'twelve': 12, 'thirteen': 13, 'fourteen': 14,
+        'fifteen': 15, 'sixteen': 16, 'seventeen': 17, 'eighteen': 18,
+        'nineteen': 19,
+    }
+    tens = {
+        'twenty': 20, 'thirty': 30, 'forty': 40, 'fifty': 50,
+        'sixty': 60, 'seventy': 70, 'eighty': 80, 'ninety': 90,
+    }
+    scales = {
+        'hundred': 100,
+        'thousand': 1000,
+        'lakh': 100000,
+        'lac': 100000,
+        'million': 1000000,
+    }
+
+    text = text.lower().replace('-', ' ')
+    tokens = re.findall(r"\b(?:%s|%s|%s)\b" % (
+        '|'.join(units.keys()), '|'.join(tens.keys()), '|'.join(scales.keys())), text)
+
+    if not tokens:
+        return None
+
+    current = total = 0
+    for token in tokens:
+        if token in units:
+            current += units[token]
+        elif token in tens:
+            current += tens[token]
+        elif token in scales:
+            current = max(1, current) * scales[token]
+            total += current
+            current = 0
+    total += current
+    return float(total) if total > 0 else None
 
 
 def parse_date_from_text(text: str, amount: Optional[float] = None) -> date:
@@ -125,15 +197,68 @@ def parse_date_from_text(text: str, amount: Optional[float] = None) -> date:
     return today
 
 
+def _keyword_in_text(keyword: str, text: str) -> bool:
+    """Return true if keyword appears as a whole word in text."""
+    return bool(re.search(r"\b" + re.escape(keyword) + r"\b", text, re.IGNORECASE))
+
+
+def _is_negated(keyword: str, text: str) -> bool:
+    """Return true when keyword is negated by nearby negation words."""
+    negation_terms = r"\b(?:not|no|never|dont|don't|didnt|didn't|doesnt|doesn't|cant|can't|cannot|wasnt|wasn't|wouldnt|wouldn't)\b"
+    pattern_before = rf"{negation_terms}(?:\s+\w+){{0,3}}\s+{re.escape(keyword)}\b"
+    pattern_after = rf"\b{re.escape(keyword)}\b(?:\s+\w+){{0,3}}\s+{negation_terms}"
+
+    return bool(re.search(pattern_before, text, re.IGNORECASE) or re.search(pattern_after, text, re.IGNORECASE))
+
+
+def _normalize_speech_metadata(text: str) -> str:
+    """Clean user phrase metadata such as 'i say' / 'goes as' for direct intent parsing."""
+    normalized = text.lower()
+    cleanup_patterns = [
+        r"\bi say\b", r"\bi said\b", r"\bi meant to say\b", r"\bwhat i said\b",
+        r"\bit goes as\b", r"\bis as\b", r"\bgoes as\b", r"\bshould be\b",
+    ]
+    for pat in cleanup_patterns:
+        normalized = re.sub(pat, "", normalized, flags=re.IGNORECASE)
+
+    normalized = re.sub(r"\b(as outflow|as inflow|outflow|inflow)\b", "", normalized, flags=re.IGNORECASE)
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    return normalized
+
+
 def determine_type(text: str) -> str:
     """Classify message as inflow or outflow based on keyword presence."""
-    lower = text.lower()
-    inflow_score = sum(1 for kw in INFLOW_KEYWORDS if kw in lower)
-    outflow_score = sum(1 for kw in OUTFLOW_KEYWORDS if kw in lower)
+    normalized = _normalize_speech_metadata(text)
 
-    if inflow_score > outflow_score:
+    inflow_keywords_found = [kw for kw in INFLOW_KEYWORDS if _keyword_in_text(kw, normalized)]
+    outflow_keywords_found = [kw for kw in OUTFLOW_KEYWORDS if _keyword_in_text(kw, normalized)]
+
+    # Explicit classification with pure inflow/outflow phrases
+    if inflow_keywords_found and not outflow_keywords_found:
         return "inflow"
-    return "outflow"  # default to outflow if ambiguous
+    if outflow_keywords_found and not inflow_keywords_found:
+        return "outflow"
+
+    # If keyword appears but is negated, ignore it for classification
+    inflow_nonnegated = [kw for kw in inflow_keywords_found if not _is_negated(kw, normalized)]
+    outflow_nonnegated = [kw for kw in outflow_keywords_found if not _is_negated(kw, normalized)]
+
+    if inflow_nonnegated and not outflow_nonnegated:
+        return "inflow"
+    if outflow_nonnegated and not inflow_nonnegated:
+        return "outflow"
+
+    # If both remain, use earliest keyword position
+    first_inflow = min((normalized.find(kw) for kw in inflow_nonnegated), default=1e9)
+    first_outflow = min((normalized.find(kw) for kw in outflow_nonnegated), default=1e9)
+
+    if first_inflow < first_outflow:
+        return "inflow"
+    if first_outflow < first_inflow:
+        return "outflow"
+
+    # Fallback to conservative outflow
+    return "outflow"
 
 
 def determine_risk(text: str) -> str:

@@ -19,6 +19,9 @@ export default function InputPanel() {
 
   // File input state
   const [selectedFile, setSelectedFile] = useState(null);
+  const [recording, setRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [audioChunks, setAudioChunks] = useState([]);
 
   const tabs = [
     { id: 'text', icon: <MessageSquare size={16} />, label: 'Natural Language' },
@@ -56,7 +59,6 @@ export default function InputPanel() {
     form.append('user_id', userId);
     try {
       const res = await api.post(endpoint, form, { headers: { 'Content-Type': 'multipart/form-data' } });
-      // Bank statement returns multiple entries
       const entries = res.data.entries || [res.data.entry];
       setResult({
         multiple: true,
@@ -68,6 +70,66 @@ export default function InputPanel() {
       setError(err.response?.data?.detail || 'Failed to process file');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAudioUpload = async (blob) => {
+    setLoading(true);
+    setError('');
+    setResult(null);
+
+    try {
+      const form = new FormData();
+      form.append('file', blob, 'voice_input.webm');
+      form.append('user_id', userId);
+
+      const res = await api.post('/audio', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const entry = res.data.entry;
+      setResult({
+        type: entry.type,
+        amount: entry.amount,
+        description: entry.description,
+        date: entry.date,
+        cashBalance: res.data.cash_balance,
+      });
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Audio transcription failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStartRecording = async () => {
+    if (recording) {
+      // Stop and upload
+      mediaRecorder.stop();
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
+      setAudioChunks([]);
+      const chunks = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          chunks.push(event.data);
+          setAudioChunks((prev) => prev.concat(event.data));
+        }
+      };
+
+      recorder.onstop = async () => {
+        setRecording(false);
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        await handleAudioUpload(blob);
+      };
+
+      recorder.start();
+      setRecording(true);
+    } catch (err) {
+      setError('Microphone access denied or unavailable');
     }
   };
 
@@ -182,12 +244,21 @@ export default function InputPanel() {
           {/* Audio */}
           {activeTab === 'audio' && (
             <div className="text-center py-12 space-y-4">
-              <div className="w-24 h-24 rounded-full bg-red-50 text-red-400 flex items-center justify-center mx-auto ring-8 ring-red-50/50 cursor-pointer hover:bg-red-100 transition-all">
+              <div className="w-24 h-24 rounded-full bg-red-50 text-red-400 flex items-center justify-center mx-auto ring-8 ring-red-50/50 transition-all">
                 <Mic size={32} />
               </div>
-              <p className="font-medium text-slate-700">Click to start voice recording</p>
-              <p className="text-slate-400 text-sm max-w-sm mx-auto">Speak your financial event naturally. The system will transcribe and extract financial data.</p>
-              <p className="text-xs text-slate-400">(Note: Audio transcription uses server-side processing via the backend)</p>
+              <p className="font-medium text-slate-700">Voice input mode</p>
+              <p className="text-slate-400 text-sm max-w-sm mx-auto">Talk naturally, e.g. “Paid ₹12,500 office supplies” or “Received ₹50,000 salary”.</p>
+
+              <button
+                onClick={handleStartRecording}
+                disabled={loading}
+                className={`text-white font-medium py-2 px-6 rounded-lg text-sm transition ${recording ? 'bg-rose-600 hover:bg-rose-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+              >
+                {recording ? 'Stop & Upload' : 'Start Recording'}
+              </button>
+
+              {recording ? <p className="text-rose-500 text-sm">Recording... speak now (microphone active)</p> : <p className="text-slate-400 text-xs">Tap to begin voice capture; tap again to stop and upload.</p>}
             </div>
           )}
         </div>

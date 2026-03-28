@@ -1,10 +1,11 @@
+# Pin below 81 so legacy builds (e.g. openai-whisper) still see pkg_resources during isolated builds.
+setuptools>=69,<81
 fastapi==0.115.0
 uvicorn[standard]==0.30.6
 sqlalchemy[asyncio]==2.0.35
 asyncpg==0.29.0
 pydantic==2.9.2
 pydantic-settings==2.5.2
-pytesseract==0.3.13
 Pillow==10.4.0
 python-multipart==0.0.12
 pdfplumber==0.11.4
@@ -13,7 +14,18 @@ alembic==1.13.3
 python-dotenv==1.0.1
 passlib[bcrypt]==1.7.4
 python-jose[cryptography]==3.3.0
+httpx==0.27.2
 scikit-learn==1.5.2
 joblib==1.4.2
 numpy==1.26.4
 psycopg2
+# Advanced OCR with PaddleOCR for better handwritten recognition
+paddlepaddle>=2.6.0
+paddleocr>=2.7.0
+# Keep pytesseract as fallback
+pytesseract==0.3.13
+# Additional image processing for better OCR
+opencv-python==4.9.0.80
+scikit-image==0.22.0
+# Speech-to-text for voice input (if pip fails on this line: pip install openai-whisper==20240930 --no-build-isolation)
+openai-whisper==20240930

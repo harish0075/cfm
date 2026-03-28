@@ -3,5 +3,6 @@
 from models.user import User
 from models.asset import Asset
 from models.financial_entry import FinancialEntry
+from models.mail_connection import MailConnection
 
-__all__ = ["User", "Asset", "FinancialEntry"]
+__all__ = ["User", "Asset", "FinancialEntry", "MailConnection"]

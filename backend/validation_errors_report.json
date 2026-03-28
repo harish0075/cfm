@@ -1,0 +1,122 @@
+[
+  {
+    "test": 0,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Stripe payout credited 4300.00"
+  },
+  {
+    "test": 1,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Uh yes so I just received my salary it was about 32000 rupees today."
+  },
+  {
+    "test": 2,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Received salary of \u20b950,000 for March"
+  },
+  {
+    "test": 3,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Rent paid \u20b918000 for this month"
+  },
+  {
+    "test": 4,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "expense: internet bill 1200"
+  },
+  {
+    "test": 5,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Paid 2000 for groceries at the supermarket"
+  },
+  {
+    "test": 6,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Electricity Bill 2026\nDue Amount\n1450.00\nStatus: Paid via NetBanking"
+  },
+  {
+    "test": 7,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "My friend returned the cash he owed me, payment received was 500 for the dinner."
+  },
+  {
+    "test": 8,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Office supplies bought\nTotal \u20b94000\nGST 18%"
+  },
+  {
+    "test": 9,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "I paid the electricity utility bill, debited 2000 from my card."
+  },
+  {
+    "test": 10,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Amazon Purchase\nOrder ID 190045\nDebit: 899"
+  },
+  {
+    "test": 11,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Yeah I mean I just bought a new keyboard, the expense was like 3500 rupees."
+  },
+  {
+    "test": 12,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "REFUND APPROVED\nOrder #2024\nAmt Received: 850\nDate: 25 Mar"
+  },
+  {
+    "test": 13,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "SALARY SLIP 2026\nEmployee: John\nCredited: 45,000"
+  },
+  {
+    "test": 14,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "invoice 2401 payment received Rs. 2500.50 thanks"
+  },
+  {
+    "test": 15,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Reeelpt\nDate 14/05/2026\nReceived from Tenant\nRent payment\nTOTAL: 12000 INR\nThank you"
+  },
+  {
+    "test": 16,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Client ABC credited 15000 to my account yesterday."
+  },
+  {
+    "test": 17,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Okay so I was at the restaurant and I paid 1200 for the meal tonight."
+  },
+  {
+    "test": 18,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "RESTAURANT RECEIPT\nTable: 4\nFood item 1: 300\nFood item 2: 250\nTOTAL PAID: 550\nDate 2026-03-25"
+  },
+  {
+    "test": 19,
+    "step": "extract_raw",
+    "error": "HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /extract_raw (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=8000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "input": "Hey, I got credited uh 6000 rupees from the freelance gig."
+  }
+]

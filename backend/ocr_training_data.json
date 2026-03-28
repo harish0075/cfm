@@ -1,0 +1,602 @@
+[
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 25/03/2026\nTotal: Rs. 500.00\nThank you!",
+    "store": "Mega Store",
+    "date": "25/03/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Super Mart\nDate: 25/03/2026\nTotal: Rs. 150.00\nThank you!",
+    "store": "Super Mart",
+    "date": "25/03/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Food Bazaar\nDate: 25/03/2026\nTotal: Rs. 250.50\nThank you!",
+    "store": "Food Bazaar",
+    "date": "25/03/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "RECEIPT\nStore: Local Shop\nDate: 01/05/2026\nTotal: Rs. 500.00\nThank you!",
+    "store": "Local Shop",
+    "date": "01/05/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Super Mart\nDate: 25/03/2026\nTotal: Rs. 500.00\nThank you!",
+    "store": "Super Mart",
+    "date": "25/03/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "BILL\nMerchant: Mega Store\nAmount: Rs. 125.75\nDate: 10/06/2026\nPaid",
+    "store": "Mega Store",
+    "date": "10/06/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "RECEIPT\nStore: Grocery Plus\nDate: 25/03/2026\nTotal: Rs. 125.75\nThank you!",
+    "store": "Grocery Plus",
+    "date": "25/03/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 15/04/2026\nTotal: Rs. 150.00\nThank you!",
+    "store": "Mega Store",
+    "date": "15/04/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "BILL\nMerchant: Grocery Plus\nAmount: Rs. 125.75\nDate: 25/03/2026\nPaid",
+    "store": "Grocery Plus",
+    "date": "25/03/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "INVOICE\nFrom: Food Bazaar\nTotal Amount: Rs. 250.50\nDate: 01/05/2026",
+    "store": "Food Bazaar",
+    "date": "01/05/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Mega Store\nTotal Amount: Rs. 75.25\nDate: 10/06/2026",
+    "store": "Mega Store",
+    "date": "10/06/2026",
+    "amount": "75.25"
+  },
+  {
+    "text": "INVOICE\nFrom: Local Shop\nTotal Amount: Rs. 75.25\nDate: 15/04/2026",
+    "store": "Local Shop",
+    "date": "15/04/2026",
+    "amount": "75.25"
+  },
+  {
+    "text": "INVOICE\nFrom: Local Shop\nTotal Amount: Rs. 150.00\nDate: 15/04/2026",
+    "store": "Local Shop",
+    "date": "15/04/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "BILL\nMerchant: Food Bazaar\nAmount: Rs. 150.00\nDate: 01/05/2026\nPaid",
+    "store": "Food Bazaar",
+    "date": "01/05/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Grocery Plus\nDate: 25/03/2026\nTotal: Rs. 500.00\nThank you!",
+    "store": "Grocery Plus",
+    "date": "25/03/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "BILL\nMerchant: Food Bazaar\nAmount: Rs. 500.00\nDate: 15/04/2026\nPaid",
+    "store": "Food Bazaar",
+    "date": "15/04/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Grocery Plus\nTotal Amount: Rs. 500.00\nDate: 25/03/2026",
+    "store": "Grocery Plus",
+    "date": "25/03/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Super Mart\nDate: 01/05/2026\nTotal: Rs. 500.00\nThank you!",
+    "store": "Super Mart",
+    "date": "01/05/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Grocery Plus\nTotal Amount: Rs. 150.00\nDate: 15/04/2026",
+    "store": "Grocery Plus",
+    "date": "15/04/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "BILL\nMerchant: Local Shop\nAmount: Rs. 250.50\nDate: 01/05/2026\nPaid",
+    "store": "Local Shop",
+    "date": "01/05/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "RECEIPT\nStore: Food Bazaar\nDate: 10/06/2026\nTotal: Rs. 500.00\nThank you!",
+    "store": "Food Bazaar",
+    "date": "10/06/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Local Shop\nDate: 01/05/2026\nTotal: Rs. 250.50\nThank you!",
+    "store": "Local Shop",
+    "date": "01/05/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Mega Store\nTotal Amount: Rs. 125.75\nDate: 25/03/2026",
+    "store": "Mega Store",
+    "date": "25/03/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "RECEIPT\nStore: Food Bazaar\nDate: 15/04/2026\nTotal: Rs. 500.00\nThank you!",
+    "store": "Food Bazaar",
+    "date": "15/04/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Mega Store\nTotal Amount: Rs. 150.00\nDate: 01/05/2026",
+    "store": "Mega Store",
+    "date": "01/05/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Grocery Plus\nDate: 10/06/2026\nTotal: Rs. 250.50\nThank you!",
+    "store": "Grocery Plus",
+    "date": "10/06/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "RECEIPT\nStore: Grocery Plus\nDate: 10/06/2026\nTotal: Rs. 75.25\nThank you!",
+    "store": "Grocery Plus",
+    "date": "10/06/2026",
+    "amount": "75.25"
+  },
+  {
+    "text": "INVOICE\nFrom: Local Shop\nTotal Amount: Rs. 125.75\nDate: 01/05/2026",
+    "store": "Local Shop",
+    "date": "01/05/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "RECEIPT\nStore: Food Bazaar\nDate: 25/03/2026\nTotal: Rs. 500.00\nThank you!",
+    "store": "Food Bazaar",
+    "date": "25/03/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Food Bazaar\nTotal Amount: Rs. 125.75\nDate: 15/04/2026",
+    "store": "Food Bazaar",
+    "date": "15/04/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "INVOICE\nFrom: Local Shop\nTotal Amount: Rs. 250.50\nDate: 25/03/2026",
+    "store": "Local Shop",
+    "date": "25/03/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 10/06/2026\nTotal: Rs. 150.00\nThank you!",
+    "store": "Mega Store",
+    "date": "10/06/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "BILL\nMerchant: Mega Store\nAmount: Rs. 125.75\nDate: 10/06/2026\nPaid",
+    "store": "Mega Store",
+    "date": "10/06/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "RECEIPT\nStore: Food Bazaar\nDate: 25/03/2026\nTotal: Rs. 150.00\nThank you!",
+    "store": "Food Bazaar",
+    "date": "25/03/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 25/03/2026\nTotal: Rs. 75.25\nThank you!",
+    "store": "Mega Store",
+    "date": "25/03/2026",
+    "amount": "75.25"
+  },
+  {
+    "text": "RECEIPT\nStore: Food Bazaar\nDate: 10/06/2026\nTotal: Rs. 75.25\nThank you!",
+    "store": "Food Bazaar",
+    "date": "10/06/2026",
+    "amount": "75.25"
+  },
+  {
+    "text": "INVOICE\nFrom: Grocery Plus\nTotal Amount: Rs. 125.75\nDate: 25/03/2026",
+    "store": "Grocery Plus",
+    "date": "25/03/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "BILL\nMerchant: Local Shop\nAmount: Rs. 150.00\nDate: 15/04/2026\nPaid",
+    "store": "Local Shop",
+    "date": "15/04/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Grocery Plus\nTotal Amount: Rs. 150.00\nDate: 15/04/2026",
+    "store": "Grocery Plus",
+    "date": "15/04/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 10/06/2026\nTotal: Rs. 75.25\nThank you!",
+    "store": "Mega Store",
+    "date": "10/06/2026",
+    "amount": "75.25"
+  },
+  {
+    "text": "BILL\nMerchant: Super Mart\nAmount: Rs. 75.25\nDate: 01/05/2026\nPaid",
+    "store": "Super Mart",
+    "date": "01/05/2026",
+    "amount": "75.25"
+  },
+  {
+    "text": "INVOICE\nFrom: Grocery Plus\nTotal Amount: Rs. 250.50\nDate: 10/06/2026",
+    "store": "Grocery Plus",
+    "date": "10/06/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Local Shop\nTotal Amount: Rs. 150.00\nDate: 10/06/2026",
+    "store": "Local Shop",
+    "date": "10/06/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 15/04/2026\nTotal: Rs. 125.75\nThank you!",
+    "store": "Mega Store",
+    "date": "15/04/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "BILL\nMerchant: Food Bazaar\nAmount: Rs. 250.50\nDate: 01/05/2026\nPaid",
+    "store": "Food Bazaar",
+    "date": "01/05/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Local Shop\nTotal Amount: Rs. 250.50\nDate: 10/06/2026",
+    "store": "Local Shop",
+    "date": "10/06/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Local Shop\nTotal Amount: Rs. 500.00\nDate: 15/04/2026",
+    "store": "Local Shop",
+    "date": "15/04/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Mega Store\nTotal Amount: Rs. 125.75\nDate: 15/04/2026",
+    "store": "Mega Store",
+    "date": "15/04/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "BILL\nMerchant: Local Shop\nAmount: Rs. 150.00\nDate: 10/06/2026\nPaid",
+    "store": "Local Shop",
+    "date": "10/06/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "BILL\nMerchant: Super Mart\nAmount: Rs. 250.50\nDate: 10/06/2026\nPaid",
+    "store": "Super Mart",
+    "date": "10/06/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "RECEIPT\nStore: Super Mart\nDate: 15/04/2026\nTotal: Rs. 500.00\nThank you!",
+    "store": "Super Mart",
+    "date": "15/04/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Food Bazaar\nDate: 01/05/2026\nTotal: Rs. 75.25\nThank you!",
+    "store": "Food Bazaar",
+    "date": "01/05/2026",
+    "amount": "75.25"
+  },
+  {
+    "text": "INVOICE\nFrom: Mega Store\nTotal Amount: Rs. 500.00\nDate: 15/04/2026",
+    "store": "Mega Store",
+    "date": "15/04/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 25/03/2026\nTotal: Rs. 150.00\nThank you!",
+    "store": "Mega Store",
+    "date": "25/03/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Food Bazaar\nTotal Amount: Rs. 500.00\nDate: 10/06/2026",
+    "store": "Food Bazaar",
+    "date": "10/06/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Food Bazaar\nDate: 10/06/2026\nTotal: Rs. 150.00\nThank you!",
+    "store": "Food Bazaar",
+    "date": "10/06/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 15/04/2026\nTotal: Rs. 500.00\nThank you!",
+    "store": "Mega Store",
+    "date": "15/04/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 01/05/2026\nTotal: Rs. 150.00\nThank you!",
+    "store": "Mega Store",
+    "date": "01/05/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Food Bazaar\nDate: 25/03/2026\nTotal: Rs. 500.00\nThank you!",
+    "store": "Food Bazaar",
+    "date": "25/03/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Super Mart\nTotal Amount: Rs. 250.50\nDate: 01/05/2026",
+    "store": "Super Mart",
+    "date": "01/05/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Food Bazaar\nTotal Amount: Rs. 150.00\nDate: 01/05/2026",
+    "store": "Food Bazaar",
+    "date": "01/05/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "BILL\nMerchant: Super Mart\nAmount: Rs. 150.00\nDate: 25/03/2026\nPaid",
+    "store": "Super Mart",
+    "date": "25/03/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Mega Store\nTotal Amount: Rs. 500.00\nDate: 10/06/2026",
+    "store": "Mega Store",
+    "date": "10/06/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 01/05/2026\nTotal: Rs. 125.75\nThank you!",
+    "store": "Mega Store",
+    "date": "01/05/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "INVOICE\nFrom: Super Mart\nTotal Amount: Rs. 125.75\nDate: 25/03/2026",
+    "store": "Super Mart",
+    "date": "25/03/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "BILL\nMerchant: Mega Store\nAmount: Rs. 125.75\nDate: 10/06/2026\nPaid",
+    "store": "Mega Store",
+    "date": "10/06/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 25/03/2026\nTotal: Rs. 150.00\nThank you!",
+    "store": "Mega Store",
+    "date": "25/03/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Super Mart\nDate: 10/06/2026\nTotal: Rs. 125.75\nThank you!",
+    "store": "Super Mart",
+    "date": "10/06/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "INVOICE\nFrom: Grocery Plus\nTotal Amount: Rs. 75.25\nDate: 01/05/2026",
+    "store": "Grocery Plus",
+    "date": "01/05/2026",
+    "amount": "75.25"
+  },
+  {
+    "text": "BILL\nMerchant: Super Mart\nAmount: Rs. 500.00\nDate: 25/03/2026\nPaid",
+    "store": "Super Mart",
+    "date": "25/03/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Local Shop\nDate: 25/03/2026\nTotal: Rs. 250.50\nThank you!",
+    "store": "Local Shop",
+    "date": "25/03/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Local Shop\nTotal Amount: Rs. 250.50\nDate: 01/05/2026",
+    "store": "Local Shop",
+    "date": "01/05/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Super Mart\nTotal Amount: Rs. 125.75\nDate: 15/04/2026",
+    "store": "Super Mart",
+    "date": "15/04/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "RECEIPT\nStore: Super Mart\nDate: 01/05/2026\nTotal: Rs. 125.75\nThank you!",
+    "store": "Super Mart",
+    "date": "01/05/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 15/04/2026\nTotal: Rs. 150.00\nThank you!",
+    "store": "Mega Store",
+    "date": "15/04/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Mega Store\nTotal Amount: Rs. 150.00\nDate: 01/05/2026",
+    "store": "Mega Store",
+    "date": "01/05/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Local Shop\nTotal Amount: Rs. 500.00\nDate: 25/03/2026",
+    "store": "Local Shop",
+    "date": "25/03/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "BILL\nMerchant: Super Mart\nAmount: Rs. 500.00\nDate: 10/06/2026\nPaid",
+    "store": "Super Mart",
+    "date": "10/06/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "BILL\nMerchant: Mega Store\nAmount: Rs. 500.00\nDate: 15/04/2026\nPaid",
+    "store": "Mega Store",
+    "date": "15/04/2026",
+    "amount": "500.00"
+  },
+  {
+    "text": "BILL\nMerchant: Local Shop\nAmount: Rs. 75.25\nDate: 15/04/2026\nPaid",
+    "store": "Local Shop",
+    "date": "15/04/2026",
+    "amount": "75.25"
+  },
+  {
+    "text": "INVOICE\nFrom: Food Bazaar\nTotal Amount: Rs. 150.00\nDate: 25/03/2026",
+    "store": "Food Bazaar",
+    "date": "25/03/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "BILL\nMerchant: Super Mart\nAmount: Rs. 125.75\nDate: 01/05/2026\nPaid",
+    "store": "Super Mart",
+    "date": "01/05/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "RECEIPT\nStore: Local Shop\nDate: 10/06/2026\nTotal: Rs. 75.25\nThank you!",
+    "store": "Local Shop",
+    "date": "10/06/2026",
+    "amount": "75.25"
+  },
+  {
+    "text": "BILL\nMerchant: Local Shop\nAmount: Rs. 125.75\nDate: 15/04/2026\nPaid",
+    "store": "Local Shop",
+    "date": "15/04/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "INVOICE\nFrom: Food Bazaar\nTotal Amount: Rs. 125.75\nDate: 10/06/2026",
+    "store": "Food Bazaar",
+    "date": "10/06/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "BILL\nMerchant: Mega Store\nAmount: Rs. 125.75\nDate: 10/06/2026\nPaid",
+    "store": "Mega Store",
+    "date": "10/06/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "BILL\nMerchant: Local Shop\nAmount: Rs. 150.00\nDate: 15/04/2026\nPaid",
+    "store": "Local Shop",
+    "date": "15/04/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "BILL\nMerchant: Food Bazaar\nAmount: Rs. 150.00\nDate: 15/04/2026\nPaid",
+    "store": "Food Bazaar",
+    "date": "15/04/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Super Mart\nDate: 25/03/2026\nTotal: Rs. 250.50\nThank you!",
+    "store": "Super Mart",
+    "date": "25/03/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Mega Store\nTotal Amount: Rs. 250.50\nDate: 25/03/2026",
+    "store": "Mega Store",
+    "date": "25/03/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 10/06/2026\nTotal: Rs. 250.50\nThank you!",
+    "store": "Mega Store",
+    "date": "10/06/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Local Shop\nTotal Amount: Rs. 250.50\nDate: 15/04/2026",
+    "store": "Local Shop",
+    "date": "15/04/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Mega Store\nTotal Amount: Rs. 150.00\nDate: 15/04/2026",
+    "store": "Mega Store",
+    "date": "15/04/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "INVOICE\nFrom: Food Bazaar\nTotal Amount: Rs. 125.75\nDate: 10/06/2026",
+    "store": "Food Bazaar",
+    "date": "10/06/2026",
+    "amount": "125.75"
+  },
+  {
+    "text": "INVOICE\nFrom: Mega Store\nTotal Amount: Rs. 250.50\nDate: 15/04/2026",
+    "store": "Mega Store",
+    "date": "15/04/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "RECEIPT\nStore: Local Shop\nDate: 25/03/2026\nTotal: Rs. 150.00\nThank you!",
+    "store": "Local Shop",
+    "date": "25/03/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Mega Store\nDate: 01/05/2026\nTotal: Rs. 250.50\nThank you!",
+    "store": "Mega Store",
+    "date": "01/05/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Mega Store\nTotal Amount: Rs. 150.00\nDate: 01/05/2026",
+    "store": "Mega Store",
+    "date": "01/05/2026",
+    "amount": "150.00"
+  },
+  {
+    "text": "RECEIPT\nStore: Super Mart\nDate: 10/06/2026\nTotal: Rs. 250.50\nThank you!",
+    "store": "Super Mart",
+    "date": "10/06/2026",
+    "amount": "250.50"
+  },
+  {
+    "text": "INVOICE\nFrom: Local Shop\nTotal Amount: Rs. 125.75\nDate: 10/06/2026",
+    "store": "Local Shop",
+    "date": "10/06/2026",
+    "amount": "125.75"
+  }
+]

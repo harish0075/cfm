@@ -1,10 +1,11 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import {
   Play, CheckCircle2, XCircle, CreditCard, RefreshCw,
   AlertTriangle, Info, ChevronDown, ChevronUp, ExternalLink,
-  FileText, Loader2
+  FileText, Loader2, Mail, Unplug
 } from 'lucide-react';
 
 function fmt(n) { return Number(n).toLocaleString('en-IN', { maximumFractionDigits: 0 }); }
@@ -63,8 +64,77 @@ function PaymentGatewayModal({ item, onSuccess, onClose }) {
   );
 }
 
+function NegotiationMailModal({ item, mailConnected, onConnectMail, onClose, onSent }) {
+  const [toEmail, setToEmail] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    if (!toEmail.trim() || !toEmail.includes('@')) {
+      alert('Enter the recipient email address (To).');
+      return;
+    }
+    setBusy(true);
+    try {
+      const { data } = await api.post('/mail/negotiation', {
+        obligation_description: item.description,
+        amount: item.amount,
+        days_to_due: item.days_to_due,
+        to_email: toEmail.trim(),
+        note: null,
+        send_now: true,
+      });
+      onSent(data);
+      onClose();
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Could not send email.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
+        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <Mail className="text-blue-600" size={22} /> Send negotiation email
+        </h3>
+        <p className="text-sm text-slate-500 mt-1">{item.description} — ₹{fmt(item.amount)} · due in {item.days_to_due}d</p>
+        <p className="text-xs text-slate-400 mt-2">Subject and body are filled automatically. Microsoft Graph sends immediately.</p>
+
+        {!mailConnected ? (
+          <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-900">
+            <p className="font-medium">Connect Microsoft 365 first</p>
+            <p className="mt-1 text-amber-800/90">We use OAuth — CashPilot never sees your password.</p>
+            <button type="button" onClick={onConnectMail}
+              className="mt-3 w-full bg-slate-900 text-white font-semibold py-2.5 rounded-lg text-sm">
+              Connect Microsoft 365
+            </button>
+          </div>
+        ) : (
+          <>
+            <label className="block mt-4 text-xs font-semibold text-slate-600">To</label>
+            <input type="email" value={toEmail} onChange={e => setToEmail(e.target.value)}
+              placeholder="creditor@example.com"
+              autoFocus
+              className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm" />
+            <div className="flex gap-3 mt-5">
+              <button type="button" onClick={onClose} className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl font-medium">Cancel</button>
+              <button type="button" onClick={submit} disabled={busy}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-bold disabled:opacity-60 flex items-center justify-center gap-2">
+                {busy ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
+                {busy ? 'Sending…' : 'Send now'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function DecisionEngine() {
   const { userId } = useContext(AuthContext);
+  const location = useLocation();
   const [stateLoading, setStateLoading] = useState(true);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState(null);
@@ -75,6 +145,42 @@ export default function DecisionEngine() {
   const [paidItems, setPaidItems] = useState({}); // description → true
   const [payTarget, setPayTarget] = useState(null); // item to pay via modal
   const [expandedIdx, setExpandedIdx] = useState(null);
+  const [mailStatus, setMailStatus] = useState({ connected: false, account_email: null });
+  const [mailToast, setMailToast] = useState('');
+  const [mailModalItem, setMailModalItem] = useState(null);
+
+  const loadMailStatus = useCallback(async () => {
+    try {
+      const res = await api.get('/mail/status');
+      setMailStatus(res.data);
+    } catch (err) {
+      setMailStatus({ connected: false, account_email: null });
+      if (err.response?.status === 401) {
+        setMailToast('Your session expired. Log in again, then reconnect Microsoft 365 if needed.');
+      }
+    }
+  }, []);
+
+  const startMailOAuth = async () => {
+    try {
+      const res = await api.get('/mail/microsoft/authorize', {
+        params: { frontend_origin: window.location.origin },
+      });
+      window.location.href = res.data.authorization_url;
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Mail sign-in is not available. Check server configuration.');
+    }
+  };
+
+  const disconnectMail = async () => {
+    if (!confirm('Disconnect Microsoft 365 from CashPilot?')) return;
+    try {
+      await api.delete('/mail/disconnect');
+      await loadMailStatus();
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Could not disconnect.');
+    }
+  };
 
   const loadState = async () => {
     setStateLoading(true); setError('');
@@ -115,6 +221,34 @@ export default function DecisionEngine() {
   };
 
   useEffect(() => { loadState(); }, [userId]);
+  useEffect(() => { loadMailStatus(); }, [userId, loadMailStatus]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('mail_connected') === '1') {
+      setMailToast('Microsoft 365 connected. Use Send on any obligation below — enter only the To: address.');
+      loadMailStatus();
+      window.history.replaceState({}, '', `${location.pathname}`);
+    }
+    const mer = params.get('mail_error');
+    if (mer) {
+      setError(decodeURIComponent(mer.replace(/\+/g, ' ')));
+      window.history.replaceState({}, '', `${location.pathname}`);
+    }
+  }, [location.search, location.pathname, loadMailStatus]);
+
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === 'visible') loadMailStatus();
+    };
+    const onFocus = () => loadMailStatus();
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('focus', onFocus);
+    return () => {
+      document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [loadMailStatus]);
 
   const runEngine = async () => {
     if (obligations.length === 0) {
@@ -192,11 +326,47 @@ export default function DecisionEngine() {
         </div>
       </div>
 
+      {mailToast && (
+        <div className="bg-green-50 border border-green-200 p-4 rounded-xl flex items-start justify-between gap-3 text-green-800 text-sm">
+          <span className="flex items-start gap-2"><CheckCircle2 size={18} className="shrink-0 mt-0.5"/> {mailToast}</span>
+          <button type="button" onClick={() => setMailToast('')} className="text-green-700 font-medium hover:underline">Dismiss</button>
+        </div>
+      )}
+
       {error && (
         <div className="bg-red-50 border border-red-200 p-4 rounded-xl flex items-start gap-3 text-red-700 text-sm">
           <AlertTriangle size={18} className="shrink-0 mt-0.5"/> {error}
         </div>
       )}
+
+      <div className={`rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${mailStatus.connected ? 'bg-slate-50 border-slate-200' : 'bg-blue-50/80 border-blue-100'}`}>
+        <div className="flex items-start gap-3">
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${mailStatus.connected ? 'bg-white border border-slate-200' : 'bg-white border border-blue-100'}`}>
+            <Mail size={20} className={mailStatus.connected ? 'text-slate-600' : 'text-blue-600'} />
+          </div>
+          <div>
+            <p className="font-semibold text-slate-800 text-sm">Negotiation mail (Microsoft 365)</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {mailStatus.connected
+                ? <>Signed in as <span className="font-medium text-slate-700">{mailStatus.account_email || 'your mailbox'}</span>. Click <strong>Send negotiation email</strong> on an obligation — you only enter the recipient (To).</>
+                : <>Connect with OAuth — we store only an encrypted token. After connecting, use <strong>Send negotiation email</strong> on any bill row (no need to run ML first).</>}
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2 shrink-0">
+          {mailStatus.connected ? (
+            <button type="button" onClick={disconnectMail}
+              className="px-4 py-2 rounded-lg text-sm font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 flex items-center gap-2">
+              <Unplug size={15} /> Disconnect
+            </button>
+          ) : (
+            <button type="button" onClick={startMailOAuth}
+              className="px-4 py-2 rounded-lg text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2">
+              <ExternalLink size={15} /> Connect Microsoft 365
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Obligations Preview / Summary Banner */}
       {!result && (
@@ -222,16 +392,20 @@ export default function DecisionEngine() {
               {obligations.map((o, i) => {
                 const urgency = o.days_to_due <= 3 ? 'text-red-600 bg-red-50' : o.days_to_due <= 7 ? 'text-orange-600 bg-orange-50' : 'text-slate-500 bg-slate-100';
                 return (
-                  <div key={i} className="flex items-center justify-between px-6 py-4 hover:bg-slate-50">
-                    <div>
+                  <div key={i} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-6 py-4 hover:bg-slate-50">
+                    <div className="min-w-0">
                       <p className="font-medium text-slate-800">{o.description}</p>
                       <p className="text-xs text-slate-400 mt-0.5">Due {fmtDate(o.due_date)} · Penalty Risk: {o.penalty_score}/10 · Flexibility: {o.flexibility}/10</p>
                     </div>
-                    <div className="text-right flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                       <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${urgency}`}>
                         {o.days_to_due === 0 ? 'Overdue' : `In ${o.days_to_due}d`}
                       </span>
                       <span className="font-bold text-slate-800">₹{fmt(o.amount)}</span>
+                      <button type="button" onClick={() => setMailModalItem(o)}
+                        className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100 flex items-center gap-1.5 shrink-0">
+                        <Mail size={14} /> Send email
+                      </button>
                     </div>
                   </div>
                 );
@@ -365,6 +539,10 @@ export default function DecisionEngine() {
                         <p className="text-xs text-amber-700 font-medium">📋 {item.action_suggestion}</p>
                       </div>
                     )}
+                    <button type="button" onClick={() => setMailModalItem(item)}
+                      className="mt-3 w-full border border-amber-300 bg-white hover:bg-amber-50/80 text-amber-900 font-semibold py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors">
+                      <Mail size={15} /> Send negotiation email
+                    </button>
                   </div>
                 ))}
               </div>
@@ -408,6 +586,18 @@ export default function DecisionEngine() {
           item={payTarget}
           onSuccess={onPaySuccess}
           onClose={() => setPayTarget(null)}
+        />
+      )}
+
+      {mailModalItem && (
+        <NegotiationMailModal
+          item={mailModalItem}
+          mailConnected={mailStatus.connected}
+          onConnectMail={startMailOAuth}
+          onClose={() => setMailModalItem(null)}
+          onSent={() => {
+            setMailToast('Message sent via Microsoft Graph. It should arrive in the recipient inbox right away.');
+          }}
         />
       )}
     </div>
